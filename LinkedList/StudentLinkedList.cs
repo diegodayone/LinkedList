@@ -11,6 +11,7 @@ namespace LinkedList
         StudentListItem Head { get; set; }
         StudentListItem Tail { get; set; }
 
+
         public int Count() => this.Count();
         public Student[] GetAll => this.Select(x => x.Item).ToArray();
 
