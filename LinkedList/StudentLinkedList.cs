@@ -76,6 +76,7 @@ namespace LinkedList
             else
             {
                 var itemToBeRemoved = this.Skip(position - 1).First();
+                //var itemToBeRemoved = this.ToArray()[position];
                 var temp = itemToBeRemoved.Prev;
                 itemToBeRemoved.Prev = itemToBeRemoved.Next;
                 itemToBeRemoved.Next = temp;
@@ -84,6 +85,41 @@ namespace LinkedList
             return true;
         }
 
+        //4- SwapItems(idItem1, idItem2) // Swap the item in position idItem1 with the item in position idItem2
+        public void SwapItems(int position1, int position2)
+        {
+            var ListToArray = this.ToArray();
+            if (position1 > ListToArray.Length || position2 > ListToArray.Length) throw new IndexOutOfRangeException();
+
+            var pos1element = ListToArray[position1];
+            var pos2element = ListToArray[position2];
+
+            //change the previous and next element of both to point the other element
+
+            if (pos1element.Prev != null)
+                pos1element.Prev.Next = pos2element;
+            else
+                Head = pos2element;
+
+            if (pos1element.Next != null)
+                pos1element.Next.Prev = pos2element;
+            else
+                Tail = pos2element;
+
+            if (pos2element.Prev != null)
+                pos2element.Prev.Next = pos1element;
+            else
+                Head = pos1element;
+
+            if (pos2element.Next != null)
+                pos2element.Next.Prev = pos1element;
+            else
+                Tail = pos1element;
+        }
+
+
+        //this.FirstOrDefault(x => x.Item.ID == id)?.Item;
+        //this.FirstOrDefault(x => x.Item.ID == id) != null ? this.FirstOrDefault(x => x.Item.ID == id)?.Item : null)
         public Student Search(int id) => this.FirstOrDefault(x => x.Item.ID == id)?.Item;
 
         #region Enumerator
