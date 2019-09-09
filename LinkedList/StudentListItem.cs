@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace LinkedList
+{
+    public class StudentListItem
+    {
+        public Student Item { get; set; }
+        public StudentListItem Next { get; set; }
+        public StudentListItem Prev { get; set; }
+    }
+}
