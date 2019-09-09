@@ -3,22 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace LinkedList
 {
     public class StudentLinkedList : IEnumerable<StudentListItem>
     {
         StudentListItem Head { get; set; }
-        StudentListItem Tail { get; set; }
+        StudentListItem Tail => this.LastOrDefault();
 
-
-        public int Count() => this.Count();
+        public int Lenght() => this.Count();
         public Student[] GetAll => this.Select(x => x.Item).ToArray();
 
         public void Clear()
         {
             Head = null;
-            Tail = null;
+            //Tail = null;
         }
 
         public void AddInPosition(Student element, int position = 0)
@@ -26,7 +26,7 @@ namespace LinkedList
             if (Head == null)
             {
                 Head = new StudentListItem() { Item = element };
-                Tail = new StudentListItem() { Item = element };
+                //Tail = new StudentListItem() { Item = element };
             }
             else
             { 
@@ -34,7 +34,7 @@ namespace LinkedList
                 {
                     var newHead = new StudentListItem() { Item = element, Next = Head };
                     Head.Prev = newHead;
-                    Tail = this.Last();
+                    //Tail = this.Last();
                     Head = newHead;
                 }
                 else
@@ -43,7 +43,7 @@ namespace LinkedList
                     {
                         var newTail = new StudentListItem() { Item = element, Prev = Tail };
                         Tail.Next = newTail;
-                        Tail = newTail;
+                        //Tail = newTail;
                     }
                     else
                     {
@@ -70,7 +70,7 @@ namespace LinkedList
             }
             else if (position == numberOfElements - 1) //removing tail
             {
-                Tail = Tail.Prev;
+                //Tail = Tail.Prev;
                 Tail.Next = null;
             }
             else
@@ -96,28 +96,85 @@ namespace LinkedList
 
             //change the previous and next element of both to point the other element
 
-            if (pos1element.Prev != null)
-                pos1element.Prev.Next = pos2element;
-            else
+            var prev1 = pos1element.Prev;
+            var prev2 = pos2element.Prev;
+
+            var next1 = pos1element.Next;
+            var next2 = pos2element.Next;
+
+            if (prev1 != null)
+                prev1.Next = pos2element;
+
+            if (next1 != null)
+                next1.Prev = pos2element;
+
+            if (prev2 != null)
+                prev2.Next = pos1element;
+
+            if (next2 != null)
+                next2.Prev = pos1element;
+
+            pos1element.Next = next2;
+            pos1element.Prev = prev2;
+
+            pos2element.Next = next1;
+            pos2element.Prev = prev1;
+
+            if (pos2element.Prev == null)
                 Head = pos2element;
 
-            if (pos1element.Next != null)
-                pos1element.Next.Prev = pos2element;
-            else
-                Tail = pos2element;
-
-            if (pos2element.Prev != null)
-                pos2element.Prev.Next = pos1element;
-            else
+            if (pos1element.Prev == null)
                 Head = pos1element;
 
-            if (pos2element.Next != null)
-                pos2element.Next.Prev = pos1element;
-            else
-                Tail = pos1element;
+            //Head = this.First(x => x.Prev == null);
+            //if (prev1 != null)
+            //{
+            //    prev1.Next = pos2element;
+            //}
+            //else
+            //{
+            //    Head = pos2element;
+            //    Head.Prev = null;
+            //    Head.Next = next1;
+            //}
+
+            //if (next1 != null)
+            //    next1.Prev = pos2element;
+
+            //if (prev2 != null)
+            //{
+            //    prev2.Next = pos1element;
+            //    pos1element.Prev = prev2;
+            //    pos1element.Next = next2;
+            //}
+            //else
+            //{
+            //    Head = pos1element;
+            //    Head.Prev = null;
+            //    Head.Next = next2;
+            //}
+
+            //if (next2 != null)
+            //    next2.Prev = pos1element;
+
         }
 
 
+
+        public void Save(string filename = null)
+        {
+            var serialized = JsonConvert.SerializeObject(this.Select(x => x.Item).ToArray());
+            System.IO.File.WriteAllText(filename != null ? filename : "saved.json", serialized);
+        }
+
+        public void Load(string filename = null)
+        {
+            var fileContent = System.IO.File.ReadAllText(filename != null ? filename : "saved.json");
+            var deserialized = JsonConvert.DeserializeObject<Student[]>(fileContent);
+            this.Clear();
+            foreach (var student in deserialized)
+                AddInPosition(student, 0);
+        }
         //this.FirstOrDefault(x => x.Item.ID == id)?.Item;
         //this.FirstOrDefault(x => x.Item.ID == id) != null ? this.FirstOrDefault(x => x.Item.ID == id)?.Item : null)
         public Student Search(int id) => this.FirstOrDefault(x => x.Item.ID == id)?.Item;
